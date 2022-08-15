@@ -93,7 +93,92 @@ router.get('/users/:user_id', (req, res)=> {
 
   });
 
-// Cart
+// Cart items
+router.post("/users/:id/cart", middleware, bodyParser.json(), (req, res) => {
+    try {
+      let { id } = req.body;
+      const qCart = ` SELECT cart
+      FROM users
+      WHERE id = ?;
+      `;
+      db.query(qCart, req.user.id, (err, results) => {
+        if (err) throw err;
+        let cart;
+        if (results.length > 0) {
+          if (results[0].cart === null) {
+            cart = [];
+          } else {
+            cart = JSON.parse(results[0].cart);
+          }
+        }
+        const strProd = `
+      SELECT *
+      FROM products
+      WHERE id = ${id};
+      `;
+        db.query(strProd, async (err, results) => {
+          if (err) throw err;
+  
+          let product = {
+            Id: results[0].Id,
+            prodName: results[0].prodName,
+            prodimg: results[0].prodDesc,
+            prodType: results[0].prodType,
+            prodPrice: results[0].prodPrice,
+            prodImg_URL: results[0].prodImg_URL,
+            prodSerial_Code: results[0].prodSerial_Code,
+            brandName: results[0].brandName,
+            totalamount: results[0].totalamount,
+            userid: results[0].userid,
+          };
+  
+          cart.push(product);
+          // res.send(cart)
+          const strQuery = `UPDATE users
+      SET cart = ?
+      WHERE (id = ${req.user.id})`;
+          db.query(strQuery, /*req.user.id */ JSON.stringify(cart), (err) => {
+            if (err) throw err;
+            res.json({
+              results,
+              msg: "Product added to Cart",
+            });
+          });
+        });
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  });
+  
+  // delete one item from cart
+  router.delete("/users/:id/cart/:prodid", middleware, (req, res) => {
+    const dCart = `SELECT cart
+    FROM users
+    WHERE id = ?`;
+    db.query(dCart, req.user.id, (err, results) => {
+      if (err) throw err;
+      let item = JSON.parse(results[0].cart).filter((x) => {
+        return x.prodid != req.params.prodid;
+      });
+      // res.send(item)
+      const strQry = `
+    UPDATE users
+    SET cart = ?
+    WHERE id= ? ;
+    `;
+        db.query(
+          strQry,
+          [JSON.stringify(item), req.user.id],
+          (err, data, fields) => {
+            if (err) throw err;
+            res.json({
+              msg: "Item Removed from Cart",
+            });
+          }
+        );
+    });
+  });
 
 // Products functionalities
 router.get('/products', (req, res)=> {
@@ -123,3 +208,46 @@ router.get('/products/:id', (req, res)=> {
     })
 });
 
+// Update users
+router.put("/users/:id", middleware, bodyParser.json(), (req, res) => {
+    const { firstname, lastname, email, address, usertype } = req.body;
+  
+    const user = {
+      username,
+      lastname,
+      email,
+      address,
+      usertype,
+    };
+    // Query
+    const strQry = `UPDATE users
+       SET ?
+       WHERE id = ${req.params.id}`;
+    db.query(strQry, user, (err, data) => {
+      if (err) throw err;
+      res.json({
+        msg: "User info Updated",
+      });
+    });
+  });
+  
+  // Delete users
+  router.delete("/users/:id", middleware, (req, res) => {
+    if (req.user.usertype === "Admin") {
+      // Query
+      const strQry = `
+        DELETE FROM users 
+        WHERE id = ?;
+        `;
+      db.query(strQry, [req.params.id], (err, data, fields) => {
+        if (err) throw err;
+        res.json({
+          msg: "Item Deleted",
+        });
+      });
+    } else {
+      res.json({
+        msg: "Only Admins permissions!",
+      });
+    }
+  });
