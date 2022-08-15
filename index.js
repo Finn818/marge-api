@@ -34,7 +34,7 @@ router.get('/', (req, res)=> {
 });
 
 // Users
-router('/users', (req, res, next)=> {
+router.post('/users', (req, res)=> {
 
     let {email, password} = req.body; 
         // If the userRole is null or empty, set it to "user".
@@ -59,26 +59,26 @@ router('/users', (req, res, next)=> {
                     password = await hash(password, 10);
                 // Query
                 strQry = 
-                `INSERT INTO users(email, password)
-                VALUES(?, ?, ?, ?, ?, ?, ?);`;
+                `INSERT INTO users(userName, userEmail, userpassword, userRole, phone_number, join_data)
+                VALUES(?, ?, ?, ?, ?, ?);`;
                 db.query(strQry, 
                 [email, password],
                 (err, results)=> {
-                if(err){
-                throw err;
-                }else {
-                res.status(201).json({msg: `number of affected row is: ${results.affectedRows}`});
-                }
-        })
+                    if(err){
+                        throw err;
+                    }else {
+                        res.status(201).json({msg: `number of affected row is: ${results.affectedRows}`});
+                    }
+                })
+            }
         }
-        }
-        });
+    });
 })
 
 //Get all the users by the ID
 router.get('/users/:user_id', (req, res)=> {
     const strQry =
-    `SELECT id, username, useremail, userpassword, userRole, phone_number,join_data, cart
+    `SELECT id, userName, userEmail, userpassword, userRole, phone_number, join_data, cart
     FROM users
     WHERE user_id = ?;
     `;
@@ -122,9 +122,4 @@ router.get('/products/:id', (req, res)=> {
         })
     })
 });
-//
-module.exports = {
-    devServer: {
-        Proxy: '*'
-    }
-}
+
