@@ -105,6 +105,7 @@ router.post("/register", (req, res) => {
         brandName,
         brandLogoImg_URL,
     } = req.body;
+   
     //Start of Hashing/Encryption
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);

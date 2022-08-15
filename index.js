@@ -34,7 +34,7 @@ router.get('/', (req, res)=> {
 });
 
 // Users
-router('/users', (req, res)=> {
+router('/users', (req, res, next)=> {
 
     let {email, password} = req.body; 
         // If the userRole is null or empty, set it to "user".
