@@ -12,6 +12,7 @@ const middleware1 = require("./middleware/auth");
 const nodemailer = require('nodemailer');
 
 
+
 // Express app
 const app = express();
 // Express app
@@ -472,7 +473,7 @@ app.post("/", bodyParser.json(), (req, res) => {
           subject: 'Password Reset',
           html:
             `<div>
-              <h3>Hi ${result[0].full_name},</h3>
+              <h3>Hi ${result[0].userName},</h3>
               <br>
               <h4>Click link below to reset your password</h4>
               <a href="https://user-images.githubusercontent.com/4998145/52377595-605e4400-2a33-11e9-80f1-c9f61b163c6a.png">
@@ -544,132 +545,66 @@ app.post("/", bodyParser.json(), (req, res) => {
     });
   })
 
-  //Register Route
-//The Route where Encryption starts
-app.post("/register", middleware1,bodyParser.json(),(req, res) => {
-    try {
-      let sql = "INSERT INTO users SET ?";
-      const {
-          prodName,
-          prodDesc,
-          prodType,
-          prodPrice,
-          prodImg_URL,
-          prodSerial_Code,
-          brandName,
-          brandLogoImg_URL,
-      } = req.body;
-     
-      //Start of Hashing/Encryption
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(password, salt);
-      let user = {
-        prodName,
-        userEmail,
-      
-      };
-      con.query(sql, user, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send(`User ${(user.userName, user.userEmail)} created Successfully`);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-     //Creating a token and setting an expiry date
-     jwt.sign(
-      req.body,
-      process.env.jwtSecret,
-      {
-        expiresIn: "365d",
-      },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  });
-
-  // app.post('/register',bodyParser.json(), 
-  //   (req, res)=> {
-  //   return controller.register(req, res);
-  //   })
-
-
-app.post("/users", bodyParser.json(), async (req, res) => {
-  try {
-    const bd = req.body;
-    if (bd.usertype === "" || bd.usertype === null) {
-      bd.usertype = "user";
-    }
-
-    const emailQ = "SELECT email from users WHERE ?";
-    let email = {
-      Email: bd.Email,
-    };
-    let date = {
-      date: new Date().toISOString().slice(0, 10)
-      // date: new Date().toLocaleDateString(),
-    };
-    let cart = {
-      cart: null,
-    };
-
-    db.query(emailQ, email, async (err, results) => {
-      if (err) throw err;
-      if (results.length > 0) {
-        res.json({
-          msg: "Email Exists",
-        });
+ // User registration
+router.post("/register", bodyParser.json(), (req, res) => {
+  // Retrieving data that was sent by the user
+  // id, firstname, lastname, email, userpassword, usertype
+  let { userName, userEmail, userpassword, userRole,phone_number,join_data } = req.body;
+  // If the userRole is null or empty, set it to "user".
+  if (userRole.length === 0) {
+    if (userRole.includes() !== "user" || userRole.includes() !== "admin")
+      user_role = "user";
+  }
+  // Check if a user already exists
+  let strQry = `SELECT userEmail, userpassword
+    FROM users
+    WHERE LOWER(email) = LOWER('${userEmail}')`;
+  db.query(strQry, async (err, results) => {
+    if (err) {
+      throw err;
+    } else {
+      if (results.length) {
+        res.status(409).json({ msg: "User already exist" });
       } else {
         // Encrypting a password
         // Default value of salt is 10.
-        bd.password = await hash(bd.password, 10);
+        userpassword = await hash(userpassword, 10);
         // Query
-        const strQry = `
-        
-        ALTER TABLE users AUTO_INCREMENT = 1;
-        
-        INSERT INTO users(id, userName, userEmail, userpassword, userRole, phone_number, join_data)  
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?);
-        `;
+        strQry = `
+                INSERT INTO users(userName, userEmail, userpassword, userRole, phone_number, join_data)
+                VALUES(?, ?, ?, ?, ?, ?);
+                `;
         db.query(
           strQry,
-          [
-            bd.userName,
-            bd.userEmail,
-            bd.userpassword,
-            bd.userRole,
-            bd.phone_number,
-            bd.join_data
-          ],
+          [userName, userEmail, userpassword, userRole, phone_number, join_data],
           (err, results) => {
             if (err) throw err;
-            const payload = {
-              user: {
-                userName: bd.userName,
-                userEmail: bd.userEmail,
-                userpassword: bd.userpassword,
-                userRole: bd.userRole,
-                phone_number: bd.phone_number,
-                join_data: bd.join_data,
-                cart: cart.cart,
-              },
-            };
+            res
+              .status(201)
+              .json({
+                msg: `number of affected row is: ${results.affectedRows}`,
+              });
           }
         );
       }
-    });
-  } catch (e) {
-    console.log(`Registration Error: ${e.message}`);
-  }
+    }
+  });
 });
+React
+Reply
 
-module.exports = app
+
+
+
+
+
+
+
+
 
 // This one goes to the bottom of your index.js
 module.exports = {
-  devServer: {
-      Proxy: '*'
-  }
+devServer: {
+    Proxy: '*'
+}
 }
