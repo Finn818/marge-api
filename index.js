@@ -583,6 +583,19 @@ app.post("/register", middleware1,bodyParser.json(),(req, res) => {
     return controller.register(req, res);
     })
 
+           //Creating a token and setting an expiry date
+           jwt.sign(
+            payload,
+            process.env.jwtSecret,
+            {
+              expiresIn: "365d",
+            },
+            (err, token) => {
+              if (err) throw err;
+              res.json({ token });
+            }
+          );
+
 app.post("/users", bodyParser.json(), async (req, res) => {
   try {
     const bd = req.body;
@@ -635,7 +648,7 @@ app.post("/users", bodyParser.json(), async (req, res) => {
             const payload = {
               user: {
                 userName: bd.userName,
-                lastname: bd.userEmail,
+                userEmail: bd.userEmail,
                 userpassword: bd.userpassword,
                 userRole: bd.userRole,
                 phone_number: bd.phone_number,
