@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const conn = require("./config/dbconn");
 const fs = require('fs');
+const middleware1 = require("../middleware/auth");
+const nodemailer = require('nodemailer');
 
 
 // Express app
@@ -422,7 +424,7 @@ app.post("/", bodyParser.json(), (req, res) => {
       }
     });
   });
-  const middleware1 = require("../middleware/auth");
+ 
   app.get("/", middleware1, (req, res) => {
     try{
       let sql = "SELECT * FROM users";
@@ -435,7 +437,7 @@ app.post("/", bodyParser.json(), (req, res) => {
     }
   });
   // Importing the dependencies
-  const nodemailer = require('nodemailer');
+ 
   app.post('/forgot-psw', (req, res) => {
       try {
       let sql = "SELECT * FROM users WHERE ?";
