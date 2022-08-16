@@ -424,8 +424,8 @@ app.post("/", bodyParser.json(), (req, res) => {
       }
     });
   });
-  const middleware = require("../middleware/auth");
-  app.get("/", middleware, (req, res) => {
+  const middleware1 = require("../middleware/auth");
+  app.get("/", middleware1, (req, res) => {
     try{
       let sql = "SELECT * FROM users";
       con.query(sql, (err, result) => {
@@ -506,7 +506,7 @@ app.post("/", bodyParser.json(), (req, res) => {
     }
   })
   // Rest Password Route
-  app.put('/users/:id', bodyParser.json(), (req, res) => {
+  app.put('/users/:id', middleware1,bodyParser.json(), (req, res) => {
     let sql = "SELECT * FROM users WHERE ?";
     let user = {
       user_id: req.params.id,
@@ -541,7 +541,7 @@ app.post("/", bodyParser.json(), (req, res) => {
 
   //Register Route
 //The Route where Encryption starts
-app.post("/register", bodyParser.json(),(req, res) => {
+app.post("/register", middleware1,bodyParser.json(),(req, res) => {
     try {
       let sql = "INSERT INTO users SET ?";
       const {
