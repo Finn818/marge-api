@@ -6,7 +6,7 @@ const path = require('path');
 const db = require("./config/dbconn");
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
-const conn = require("../db_connec");
+const conn = require("./config/dbconn");
 const fs = require('fs');
 app.post('/login', bodyParser.json(),
 (req, res)=> {
