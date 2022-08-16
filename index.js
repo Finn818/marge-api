@@ -19,6 +19,12 @@ const app = express();
 // Configuration 
 const middleware = require("./middleware/ErrorHandling")
 const port = parseInt(process.env.PORT) || 4000;
+// Set header
+app.use((req, res, next)=>{
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  next();
+});
 
 // Set header
 // app.use(cors());
@@ -30,12 +36,7 @@ app.use(express.json(),
     express.urlencoded({
     extended: true})
 );
-// Set header
-app.use((req, res, next)=>{
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "*");
-  next();
-});
+
 // 
 app.listen(port, ()=> {
     console.log(`Server is running on port ${port}`);
