@@ -11,8 +11,7 @@ const fs = require('fs');
 app.post('/login', bodyParser.json(),
 (req, res)=> {
 })
-// Error handling
-const createError = require('./middleware/ErrorHandling');
+
 // Express app
 const app = express();
 // Express app
