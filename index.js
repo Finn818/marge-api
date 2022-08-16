@@ -8,15 +8,15 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const conn = require("../db_connec");
 const fs = require('fs');
-router.post('/login', bodyParser.json(),
+app.post('/login', bodyParser.json(),
 (req, res)=> {
 })
 // Error handling
 const createError = require('./middleware/ErrorHandling');
 // Express app
 const app = express();
-// Express router
-// const router = express.Router();
+// Express app
+// const app = express.app();
 // Configuration 
 const middleware = require("./middleware/ErrorHandling")
 const port = parseInt(process.env.PORT) || 4000;
@@ -27,7 +27,7 @@ app.use(cors({
     origin: ['http://127.0.0.1:8080', 'http://localhost:8080'],
     credentials: true
 }));
-app.use(router, express.json(), 
+app.use(express.json(), 
     express.urlencoded({
     extended: true})
 );
@@ -138,7 +138,7 @@ app.put("/users/:id", middleware, bodyParser.json(), (req, res) => {
   });
   
   // Delete users
-  router.delete("/users/:id", middleware, (req, res) => {
+  app.delete("/users/:id", middleware, (req, res) => {
     if (req.user.usertype === "Admin") {
       // Query
       const strQry = `
@@ -160,7 +160,7 @@ app.put("/users/:id", middleware, bodyParser.json(), (req, res) => {
 
 //   ===============================================
 // Cart items
-router.post("/users/:id/cart", middleware, bodyParser.json(), (req, res) => {
+app.post("/users/:id/cart", middleware, bodyParser.json(), (req, res) => {
     try {
       let { id } = req.body;
       const qCart = ` SELECT cart
@@ -218,7 +218,7 @@ router.post("/users/:id/cart", middleware, bodyParser.json(), (req, res) => {
   });
   
   // delete one item from cart
-  router.delete("/users/:id/cart/:prodid", middleware, (req, res) => {
+  app.delete("/users/:id/cart/:prodid", middleware, (req, res) => {
     const dCart = `SELECT cart
     FROM users
     WHERE id = ?`;
@@ -254,7 +254,7 @@ app.use("/register", register);
 
 // ======================================================
 // Products functionalities
-router.get('/products', (req, res)=> {
+app.get('/products', (req, res)=> {
     const strQry = `
     SELECT id, prodName, prodDesc, prodType, prodPrice, prodImg_URL, prodSerial_Code, brandName, brandLogoImg_URL
     FROM products;
@@ -267,7 +267,7 @@ router.get('/products', (req, res)=> {
     })
 });
 
-router.get('/products/:id', (req, res)=> {
+app.get('/products/:id', (req, res)=> {
     const strQry = `
     SELECT id, prodName, prodDesc, prodType, prodPrice, prodImg_URL, prodSerial_Code, brandName, brandLogoImg_URL
     FROM products
@@ -282,7 +282,7 @@ router.get('/products/:id', (req, res)=> {
 });
 
 //aDDING A NEW POST
-router.post("/", bodyParser.json(), (req, res) => {
+app.post("/", bodyParser.json(), (req, res) => {
     const {
       Id,
       prodName,
@@ -314,7 +314,7 @@ router.post("/", bodyParser.json(), (req, res) => {
       res.status(400).send(error);
     }
   });
-  router.put("/:id", bodyParser.json(), (req, res) => {
+  app.put("/:id", bodyParser.json(), (req, res) => {
     const {
       Id,
       prodName,
@@ -341,7 +341,7 @@ router.post("/", bodyParser.json(), (req, res) => {
       res.status(400).send(error);
     }
   });
-  router.delete("/:id", bodyParser.json(),(req, res) => {
+  app.delete("/:id", bodyParser.json(),(req, res) => {
     try {
       con.query(
         `DELETE FROM users WHERE user_id=${req.params.id}`,
@@ -358,7 +358,7 @@ router.post("/", bodyParser.json(), (req, res) => {
 
 //   ===============================================
  //Login
- router.post("/login", bodyParser.json(),(req, res) => {
+ app.post("/login", bodyParser.json(),(req, res) => {
     try {
       let sql = "SELECT * FROM users WHERE ?";
       let user = {
@@ -412,7 +412,7 @@ router.post("/", bodyParser.json(), (req, res) => {
     }
   });
   //Verify
-  router.get("/users", bodyParser.json(), (req, res) => {
+  app.get("/users", bodyParser.json(), (req, res) => {
     const token = req.header("x-auth-token");
     jwt.verify(token, process.env.jwtSecret, (err, decodedToken) => {
       if (err) {
@@ -426,7 +426,7 @@ router.post("/", bodyParser.json(), (req, res) => {
     });
   });
   const middleware = require("../middleware/auth");
-  router.get("/", middleware, (req, res) => {
+  app.get("/", middleware, (req, res) => {
     try{
       let sql = "SELECT * FROM users";
       con.query(sql, (err, result) => {
@@ -439,7 +439,7 @@ router.post("/", bodyParser.json(), (req, res) => {
   });
   // Importing the dependencies
   const nodemailer = require('nodemailer');
-  router.post('/forgot-psw', (req, res) => {
+  app.post('/forgot-psw', (req, res) => {
       try {
       let sql = "SELECT * FROM users WHERE ?";
       let user = {
@@ -507,7 +507,7 @@ router.post("/", bodyParser.json(), (req, res) => {
     }
   })
   // Rest Password Route
-  router.put('/users/:id', bodyParser.json(), (req, res) => {
+  app.put('/users/:id', bodyParser.json(), (req, res) => {
     let sql = "SELECT * FROM users WHERE ?";
     let user = {
       user_id: req.params.id,
@@ -542,7 +542,7 @@ router.post("/", bodyParser.json(), (req, res) => {
 
   //Register Route
 //The Route where Encryption starts
-router.post("/register", bodyParser.json(),(req, res) => {
+app.post("/register", bodyParser.json(),(req, res) => {
     try {
       let sql = "INSERT INTO users SET ?";
       const {
@@ -574,12 +574,12 @@ router.post("/register", bodyParser.json(),(req, res) => {
     }
   });
 
-  router.post('/register',bodyParser.json(), 
+  app.post('/register',bodyParser.json(), 
     (req, res)=> {
     return controller.register(req, res);
     })
 
-router.post("/users", bodyParser.json(), async (req, res) => {
+app.post("/users", bodyParser.json(), async (req, res) => {
   try {
     const bd = req.body;
     if (bd.usertype === "" || bd.usertype === null) {
@@ -648,4 +648,4 @@ router.post("/users", bodyParser.json(), async (req, res) => {
   }
 });
 
-module.exports = router
+module.exports = app
