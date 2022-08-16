@@ -245,11 +245,9 @@ app.post("/users/:id/cart", middleware, bodyParser.json(), (req, res) => {
     });
   });
 
-  const login = require("./models/login");
-app.use("/login", login);
+
   
-const register = require("./models/register");
-app.use("/register", register);
+
 
 // ======================================================
 // Products functionalities
