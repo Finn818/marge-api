@@ -2,4 +2,3 @@ node_modules
 .env
 Procfile
 res.rest
-store
