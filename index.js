@@ -361,120 +361,8 @@ app.post("/", bodyParser.json(), (req, res) => {
     }
   });
 
-  //Register Route
-//The Route where Encryption starts
-app.post("/register", middleware1,bodyParser.json(),(req, res) => {
-  try {
-    let sql = "INSERT INTO users SET ?";
-    const {
-      userName,
-      userEmail,
-      userpassword,
-      userRole,
-      phone_number,
-      join_data
-    } = req.body;
-   
-    //Start of Hashing/Encryption
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
-    let user = {
-      userName,
-      userEmail,
-      userpassword,
-      userRole,
-      phone_number,
-      join_data
+  // ================================================
 
-    };
-    con.query(sql, user, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send(`User ${(user.userName, user.userEmail)} created Successfully`);
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  
-});
-
-app.post("/users", bodyParser.json(), async (req, res) => {
-try {
-  const bd = req.body;
-  if (bd.usertype === "" || bd.usertype === null) {
-    bd.usertype = "user";
-  }
-
-  const emailQ = "SELECT email from users WHERE ?";
-  let email = {
-    Email: bd.Email,
-  };
-  let date = {
-    date: new Date().toISOString().slice(0, 10)
-    // date: new Date().toLocaleDateString(),
-  };
-  let cart = {
-    cart: null,
-  };
-
-  db.query(emailQ, email, async (err, results) => {
-    if (err) throw err;
-    if (results.length > 0) {
-      res.json({
-        msg: "Email Exists",
-      });
-    } else {
-      // Encrypting a password
-      // Default value of salt is 10.
-      bd.password = await hash(bd.password, 10);
-      // Query
-      const strQry = `
-      
-      ALTER TABLE users AUTO_INCREMENT = 1;
-      
-      INSERT INTO users(userName, userEmail, userpassword, userRole, phone_number, join_data)  
-      VALUES(?, ?, ?, ?, ?, ?,);
-      `;
-      db.query(
-        strQry,
-        [
-          bd.userName,
-          bd.userEmail,
-          bd.userpassword,
-          bd.userRole,
-          bd.phone_number,
-          bd.join_data
-        ],
-        (err, results) => {
-          if (err) throw err;
-          const payload = {
-            user: {
-              userName: bd.userName,
-              userEmail: bd.userEmail,
-              userpassword: bd.userpassword,
-              userRole: bd.userRole,
-              phone_number: bd.phone_number,
-              join_data: bd.join_data,
-              cart: cart.cart,
-            },
-          };
-        }
-      );
-    }
-  });
-} catch (e) {
-  console.log(`Registration Error: ${e.message}`);
-}
-});
-
-module.exports = app
-
-// This one goes to the bottom of your index.js
-module.exports = {
-devServer: {
-    Proxy: '*'
-}
-}
 
 //   ===============================================
  //Login
@@ -660,6 +548,120 @@ devServer: {
     });
   })
 
+    //Register Route
+//The Route where Encryption starts
+app.post("/register", middleware1,bodyParser.json(),(req, res) => {
+  try {
+    let sql = "INSERT INTO users SET ?";
+    const {
+      userName,
+      userEmail,
+      userpassword,
+      userRole,
+      phone_number,
+      join_data
+    } = req.body;
+   
+    //Start of Hashing/Encryption
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+    let user = {
+      userName,
+      userEmail,
+      userpassword,
+      userRole,
+      phone_number,
+      join_data
+
+    };
+    con.query(sql, user, (err, result) => {
+      if (err) throw err;
+      console.log(result);
+      res.send(`User ${(user.userName, user.userEmail)} created Successfully`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  
+});
+
+app.post("/users", bodyParser.json(), async (req, res) => {
+try {
+  const bd = req.body;
+  if (bd.usertype === "" || bd.usertype === null) {
+    bd.usertype = "user";
+  }
+
+  const emailQ = "SELECT email from users WHERE ?";
+  let email = {
+    Email: bd.Email,
+  };
+  let date = {
+    date: new Date().toISOString().slice(0, 10)
+    // date: new Date().toLocaleDateString(),
+  };
+  let cart = {
+    cart: null,
+  };
+
+  db.query(emailQ, email, async (err, results) => {
+    if (err) throw err;
+    if (results.length > 0) {
+      res.json({
+        msg: "Email Exists",
+      });
+    } else {
+      // Encrypting a password
+      // Default value of salt is 10.
+      bd.password = await hash(bd.password, 10);
+      // Query
+      const strQry = `
+      
+      ALTER TABLE users AUTO_INCREMENT = 1;
+      
+      INSERT INTO users(userName, userEmail, userpassword, userRole, phone_number, join_data)  
+      VALUES(?, ?, ?, ?, ?, ?,);
+      `;
+      db.query(
+        strQry,
+        [
+          bd.userName,
+          bd.userEmail,
+          bd.userpassword,
+          bd.userRole,
+          bd.phone_number,
+          bd.join_data
+        ],
+        (err, results) => {
+          if (err) throw err;
+          const payload = {
+            user: {
+              userName: bd.userName,
+              userEmail: bd.userEmail,
+              userpassword: bd.userpassword,
+              userRole: bd.userRole,
+              phone_number: bd.phone_number,
+              join_data: bd.join_data,
+              cart: cart.cart,
+            },
+          };
+        }
+      );
+    }
+  });
+} catch (e) {
+  console.log(`Registration Error: ${e.message}`);
+}
+});
+
+module.exports = app
+
+// This one goes to the bottom of your index.js
+module.exports = {
+devServer: {
+    Proxy: '*'
+}
+}
 
 // This one goes to the bottom of your index.js
 module.exports = {
