@@ -8,9 +8,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const conn = require("./config/dbconn");
 const fs = require('fs');
-app.post('/login', bodyParser.json(),
-(req, res)=> {
-})
+
 
 // Express app
 const app = express();
