@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const conn = require("./config/dbconn");
 const fs = require('fs');
-const middleware1 = require("../middleware/auth");
+const middleware1 = require("./middleware/auth");
 const nodemailer = require('nodemailer');
 
 
