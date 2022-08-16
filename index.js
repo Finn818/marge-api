@@ -30,6 +30,12 @@ app.use(express.json(),
     express.urlencoded({
     extended: true})
 );
+// Set header
+app.use((req, res, next)=>{
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "*");
+  next();
+});
 // 
 app.listen(port, ()=> {
     console.log(`Server is running on port ${port}`);
@@ -361,7 +367,7 @@ app.post("/", bodyParser.json(), (req, res) => {
       let user = {
         email: req.body.email,
       };
-      con.query(sql, user, async (err, result) => {
+      conn.query(sql, user, async (err, result) => {
         if (err) throw err;
         if (result.length === 0) {
           res.send("Email not found please register");
@@ -646,3 +652,10 @@ app.post("/users", bodyParser.json(), async (req, res) => {
 });
 
 module.exports = app
+
+// This one goes to the bottom of your index.js
+module.exports = {
+  devServer: {
+      Proxy: '*'
+  }
+}
