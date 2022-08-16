@@ -576,25 +576,25 @@ app.post("/register", middleware1,bodyParser.json(),(req, res) => {
     } catch (error) {
       console.log(error);
     }
+     //Creating a token and setting an expiry date
+     jwt.sign(
+      req.body,
+      process.env.jwtSecret,
+      {
+        expiresIn: "365d",
+      },
+      (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      }
+    );
   });
 
-  app.post('/register',bodyParser.json(), 
-    (req, res)=> {
-    return controller.register(req, res);
-    })
+  // app.post('/register',bodyParser.json(), 
+  //   (req, res)=> {
+  //   return controller.register(req, res);
+  //   })
 
-           //Creating a token and setting an expiry date
-           jwt.sign(
-            payload,
-            process.env.jwtSecret,
-            {
-              expiresIn: "365d",
-            },
-            (err, token) => {
-              if (err) throw err;
-              res.json({ token });
-            }
-          );
 
 app.post("/users", bodyParser.json(), async (req, res) => {
   try {
