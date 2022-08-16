@@ -418,7 +418,7 @@ try {
     cart: null,
   };
 
-  db.query(emailQ, email, async (err, results) => {
+  db.query(emailQ, userEmail, async (err, results) => {
     if (err) throw err;
     if (results.length > 0) {
       res.json({
@@ -427,7 +427,7 @@ try {
     } else {
       // Encrypting a password
       // Default value of salt is 10.
-      bd.password = await hash(bd.password, 10);
+      bd.password = await hash(bd.userpassword, 10);
       // Query
       const strQry = `
       
@@ -483,7 +483,7 @@ devServer: {
     try {
       let sql = "SELECT * FROM users WHERE ?";
       let user = {
-        email: req.body.email,
+        email: req.body.userEmail,
       };
       conn.query(sql, user, async (err, result) => {
         if (err) throw err;
@@ -493,8 +493,8 @@ devServer: {
           //Decryption
           //Accepts the password stored in the db and the password given by the user(req.body)
           const isMatch = await bcrypt.compare(
-            req.body.password,
-            result[0].password
+            req.body.userpassword,
+            result[0].userpassword
           );
           //If the password does not match
           if (!isMatch) {
@@ -503,14 +503,14 @@ devServer: {
             const payload = {
               user: {
                 Id: result[0].Id,
-                prodName: result[0].prod_name,
-                prodDesc: result[0].prod_desc,
-                prodType: result[0].prod_type,
-                prodPrice: result[0].prod_price,
-                prodImg_URL: result[0].prod_img_url,
-                prodSerialCode: result[0].prod_serial_code,
+                prodName: result[0].prodName,
+                prodDesc: result[0].prodDesc,
+                prodType: result[0].prodType,
+                prodPrice: result[0].prodPrice,
+                prodImg_URL: result[0].prodImg_URL,
+                prodSerialCode: result[0].prodSerial_Code,
                 brandName: result[0].brandName,
-                brandlogo_img_url: result[0].brandlogo-img_url,
+                brandLogoImg_URL: result[0].brandLogoImg_URL
               },
             };
             //Creating a token and setting an expiry date
@@ -564,7 +564,7 @@ devServer: {
       try {
       let sql = "SELECT * FROM users WHERE ?";
       let user = {
-        email: req.body.email,
+        email: req.body.userEmail,
       };
       con.query(sql, user, (err, result) => {
         if (err) throw err;
@@ -642,13 +642,13 @@ devServer: {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
         const updatedPassword = {
-          prod_name: result[0].prod_name,
-          prod_desc: result[0].prod_desc,
-          prod_type: result[0].prod_type,
-          prod_price: result[0].prod_price,
+          prodName: result[0].prodName,
+          prodDesc: result[0].prodDesc,
+          prodType: result[0].prodType,
+          prodPrice: result[0].prodPrice,
           prodImg_URL: result[0].prodImg_URL,
-          prod_serial_code: result[0].prod_serial_code,
-          brand_name: result[0].brand_name,
+          prodSerial_Code: result[0].prodSerial_Code,
+          brandName: result[0].brandName,
           // Only thing im changing in table
           password: hash,
         };
