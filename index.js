@@ -35,12 +35,12 @@ app.listen(port, ()=> {
 
 // home
 app.get('/', (req, res)=> { 
-    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+ res.send("Nothing Fells Better")
 });
 
 // ====================================================
 // Users
-app.post('/users', bodyParser.json(),(req, res)=> {
+app.post('/users',middleware1, bodyParser.json(),(req, res)=> {
     let {email, password} = req.body; 
         // If the userRole is null or empty, set it to "user".
         if(userRole.length === 0) {
